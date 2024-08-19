@@ -20,7 +20,7 @@ module "network" {
 }
 
 module "nginx" {
-  source = "../..//modules/nginx"
+  source = "../../modules/nginx"
   
   env           = "prod"
   vpc_id        = module.network.vpc_id  # network 모듈의 output 참조
@@ -43,7 +43,7 @@ module "bastion" {
   ami_id        = "ami-0091f05e4b8ee6709" #region마다 ami id 다름
   instance_type = "t2.micro"
   instance_name = "bastion"
-  key_name      = "module.bastion.key_pair_name"
+  key_name      = "bastion-key" #"module.bastion.key_pair_name"
   
   tags = {
     Environment = "prod"
