@@ -13,7 +13,7 @@ module "network" {
   a_private_subnet_02_cidr_block = "192.168.1.128/27"
   #c_private_subnet_02_cidr_block = "192.168.1.160/27"
   a_private_subnet_03_cidr_block = "192.168.1.192/27"
-  bastion_security_group_id = module.bastion.bastion_security_group_id
+
 
   tags = {
     Environment = "prod"
