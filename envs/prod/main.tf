@@ -1,7 +1,6 @@
 
 module "network" {
   source = "../../modules/network"
-  #상대경로 사용하는 것이 좋음
 
   env                       = "prod"
   region                    = "dk"
@@ -22,7 +21,6 @@ module "network" {
 
 module "nginx" {
   source = "../..//modules/nginx"
-  #상대경로 사용하는 것이 좋음
   
   env           = "prod"
   vpc_id        = module.network.vpc_id  # network 모듈의 output 참조
@@ -37,8 +35,7 @@ module "nginx" {
 }
 
 module "bastion" {
-  source = "../..//modules/bastion"
-  #상대경로 사용하는 것이 좋음
+  source = "../../modules/bastion"
   
   env           = "prod"
   vpc_id        = module.network.vpc_id  # network 모듈의 output 참조
@@ -46,20 +43,9 @@ module "bastion" {
   ami_id        = "ami-0091f05e4b8ee6709" #region마다 ami id 다름
   instance_type = "t2.micro"
   instance_name = "bastion"
-  key_name      = "bastion"
+  key_name      = "module.bastion.key_pair_name"
   
   tags = {
     Environment = "prod"
   }
-}
-
-resource "null_resource" "save_private_key" {
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "${module.bastion.private_key_pem}" > bastion-key.pem
-      chmod 400 bastion-key.pem
-    EOT
-  }
-
-  depends_on = [module.bastion]
 }

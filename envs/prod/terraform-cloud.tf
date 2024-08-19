@@ -4,7 +4,7 @@ terraform {
     organization = "cwave-druwa"
 
     workspaces {
-      name = "jungin-local"
+      name = "terraform"
     }
   }
 }
