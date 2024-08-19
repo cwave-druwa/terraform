@@ -6,7 +6,7 @@ resource "aws_instance" "bastion_server" {
 
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
-  
+  user_data = var.user_data
 
   tags = merge({
     Name = "${var.env}-ec2-${var.instance_name}"

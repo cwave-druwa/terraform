@@ -41,3 +41,9 @@ variable "key_name" {
   description = "Key-pair name"
   type        = string
 }
+
+variable "user_data" {
+  description = "User data script for EC2 instance"
+  type        = string
+  default     = ""
+}
