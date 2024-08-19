@@ -154,9 +154,9 @@ resource "aws_route_table" "a_private_03" {
 resource "aws_route" "a_private_03_to_nat" {
   route_table_id         = aws_route_table.a_private_03.id  # 프라이빗 라우팅 테이블
   destination_cidr_block = "0.0.0.0/0"  # 모든 외부 트래픽에 대해
-  nat_gateway_id         = aws_nat_gateway.c_nat.id   # NAT 게이트웨이 ID 참조
+  nat_gateway_id         = aws_nat_gateway.a_nat.id   # NAT 게이트웨이 ID 참조
 
-  depends_on = [aws_nat_gateway.c_nat]  # NAT 게이트웨이가 먼저 생성되도록 보장
+  depends_on = [aws_nat_gateway.a_nat]  # NAT 게이트웨이가 먼저 생성되도록 보장
 }
 
 # 서브넷과 라우팅 테이블 연결 (라우팅 테이블을 서브넷에 연결)

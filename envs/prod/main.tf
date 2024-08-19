@@ -39,6 +39,7 @@ module "bastion" {
   source = "../../modules/bastion"
   
   env           = "prod"
+  region_id                 = "ap-northeast-1"
   vpc_id        = module.network.vpc_id  # network 모듈의 output 참조
   subnet_id     = module.network.a_private_subnet_03_id
   ami_id        = "ami-0091f05e4b8ee6709" #region마다 ami id 다름

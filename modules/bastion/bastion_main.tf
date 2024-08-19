@@ -54,24 +54,24 @@ resource "aws_security_group" "bastion_sg" {
 # SSM 관련 VPC Endpoint 생성
 resource "aws_vpc_endpoint" "ssm" {
   vpc_id            = var.vpc_id
-  service_name      = "com.amazonaws.${var.region}.ssm"
+  service_name      = "com.amazonaws.${var.region_id}.ssm"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = var.subnet_id
+  subnet_ids        = [var.subnet_id]
   security_group_ids = [aws_security_group.bastion_sg.id]
 }
 
 resource "aws_vpc_endpoint" "ec2messages" {
   vpc_id            = var.vpc_id
-  service_name      = "com.amazonaws.${var.region}.ec2messages"
+  service_name      = "com.amazonaws.${var.region_id}.ec2messages"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = var.subnet_id
+  subnet_ids        = [var.subnet_id]
   security_group_ids = [aws_security_group.bastion_sg.id]
 }
 
 resource "aws_vpc_endpoint" "ssmmessages" {
   vpc_id            = var.vpc_id
-  service_name      = "com.amazonaws.${var.region}.ssmmessages"
+  service_name      = "com.amazonaws.${var.region_id}.ssmmessages"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = var.subnet_id
+  subnet_ids        = [var.subnet_id]
   security_group_ids = [aws_security_group.bastion_sg.id]
 }
