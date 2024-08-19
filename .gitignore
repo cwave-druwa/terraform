@@ -1,0 +1,15 @@
+# Terraform 상태 파일
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
+
+# .terraform 디렉토리 (Terraform 모듈 및 플러그인 캐시)
+.terraform/
+
+# Terraform 변수 파일 (보통 민감한 정보를 포함할 수 있음)
+*.tfvars
+*.tfvars.json
+
+# .terraform.lock.hcl 파일은 보통 버전 관리 대상이지만, 필요에 따라 제외할 수 있음
+# terraform.lock.hcl
