@@ -21,6 +21,7 @@ resource "aws_subnet" "a_public_01" {
 }
 
 # AZ c 퍼블릭 서브넷 생성
+/*
 resource "aws_subnet" "c_public_01" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.c_public_subnet_01_cidr_block
@@ -30,6 +31,7 @@ resource "aws_subnet" "c_public_01" {
     Name = "${var.env}-sub-c-pub01"
   }, var.tags)
 }
+*/
 
 # AZ a 프라이빗 서브넷1 생성
 resource "aws_subnet" "a_private_01" {
@@ -41,6 +43,7 @@ resource "aws_subnet" "a_private_01" {
   }, var.tags)
 }
 
+/*
 # AZ c 프라이빗 서브넷1 생성
 resource "aws_subnet" "c_private_01" {
   vpc_id            = aws_vpc.main.id
@@ -50,6 +53,7 @@ resource "aws_subnet" "c_private_01" {
     Name = "${var.env}-sub-c-pri01"
   }, var.tags)
 }
+*/
 
 # AZ a 프라이빗 서브넷2 생성
 resource "aws_subnet" "a_private_02" {
@@ -61,6 +65,7 @@ resource "aws_subnet" "a_private_02" {
   }, var.tags)
 }
 
+/*
 # AZ c 프라이빗 서브넷2 생성
 resource "aws_subnet" "c_private_02" {
   vpc_id            = aws_vpc.main.id
@@ -70,6 +75,7 @@ resource "aws_subnet" "c_private_02" {
     Name = "${var.env}-sub-c-pri02"
   }, var.tags)
 }
+*/
 
 # AZ a 프라이빗 서브넷3 생성
 resource "aws_subnet" "a_private_03" {
@@ -113,10 +119,10 @@ resource "aws_route_table_association" "a_public_01" {
   route_table_id = aws_route_table.public_01.id
 }
 
-resource "aws_route_table_association" "c_public_01" {
-  subnet_id      = aws_subnet.c_public_01.id
-  route_table_id = aws_route_table.public_01.id
-}
+#resource "aws_route_table_association" "c_public_01" {
+#  subnet_id      = aws_subnet.c_public_01.id
+#  route_table_id = aws_route_table.public_01.id
+#}
 
 #####################################
 # NAT
@@ -136,6 +142,7 @@ resource "aws_eip" "a_nat" {
   domain = "vpc" 
 }
 
+/*
 # AZ c 퍼블릭 서브넷에 NAT 생성
 resource "aws_nat_gateway" "c_nat" {
   allocation_id = aws_eip.c_nat.id
@@ -151,6 +158,7 @@ resource "aws_eip" "c_nat" {
   domain = "vpc" 
 }
 
+*/
 
 #####################################
 # AZ a 프라이빗 서브넷 1의 라우팅 테이블
@@ -208,6 +216,7 @@ resource "aws_route_table_association" "a_private_03_association" {
   route_table_id = aws_route_table.a_private_03.id  # 프라이빗 라우팅 테이블 ID
 }
 
+/*
 #####################################
 # AZ c 프라이빗 서브넷 1의 라우팅 테이블
 #####################################
@@ -235,7 +244,7 @@ resource "aws_route_table_association" "c_private_01_association" {
   route_table_id = aws_route_table.c_private_01.id  # 프라이빗 라우팅 테이블 ID
 }
 
-
+*/
 
 
 

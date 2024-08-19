@@ -2,11 +2,11 @@ resource "aws_instance" "bastion_server" {
   ami           = var.ami_id
   instance_type = var.instance_type
   subnet_id     = var.subnet_id
-  key_name      = var.key_name #ssh key-pair name
+  #key_name      = var.key_name #ssh key-pair name
 
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
-  user_data = var.user_data
+  #user_data = 
 
   tags = merge({
     Name = "${var.env}-ec2-${var.instance_name}"
@@ -51,12 +51,27 @@ resource "aws_security_group" "bastion_sg" {
   }, var.tags)
 }
 
-# AWS Key Pair 리소스를 생성할 시 공개 키 참조
-resource "aws_key_pair" "bastion_key_pair" {
-  key_name   = "bastion-key"
-  public_key = filebase64("${path.module}/bastion-key.pub")
+# SSM 관련 VPC Endpoint 생성
+resource "aws_vpc_endpoint" "ssm" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.ssm"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = var.subnet_id
+  security_group_ids = [var.security_group_id]
+}
 
-  tags = merge({
-    Name = "${var.env}-key-${var.instance_name}"
-  }, var.tags)
+resource "aws_vpc_endpoint" "ec2messages" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.ec2messages"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = var.subnet_id
+  security_group_ids = [var.security_group_id]
+}
+
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.ssmmessages"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = var.subnet_id
+  security_group_ids = [var.security_group_id]
 }
