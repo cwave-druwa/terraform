@@ -26,28 +26,13 @@ variable "a_public_subnet_01_cidr_block" {
   type        = string
 }
 
-variable "c_public_subnet_01_cidr_block" {
-  description = "CIDR block for the AZ c public subnet"
-  type        = string
-}
-
 variable "a_private_subnet_01_cidr_block" {
   description = "CIDR block for the AZ a first private subnet"
   type        = string
 }
 
-variable "c_private_subnet_01_cidr_block" {
-  description = "CIDR block for the AZ c first private subnet"
-  type        = string
-}
-
 variable "a_private_subnet_02_cidr_block" {
   description = "CIDR block for the AZ a second private subnet"
-  type        = string
-}
-
-variable "c_private_subnet_02_cidr_block" {
-  description = "CIDR block for the AZ c second private subnet"
   type        = string
 }
 
