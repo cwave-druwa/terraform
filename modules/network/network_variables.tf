@@ -41,6 +41,11 @@ variable "a_private_subnet_03_cidr_block" {
   type        = string
 }
 
+variable "bastion_security_group_id" {
+  description = "Security Group id for bastion host"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to assign to resources"
   type        = map(string)

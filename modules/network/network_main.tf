@@ -20,18 +20,6 @@ resource "aws_subnet" "a_public_01" {
   }, var.tags)
 }
 
-# AZ c 퍼블릭 서브넷 생성
-/*
-resource "aws_subnet" "c_public_01" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.c_public_subnet_01_cidr_block
-  availability_zone       = "${var.region_id}c"
-  map_public_ip_on_launch = true  #퍼블릭IP 주소 자동할당
-  tags = merge({
-    Name = "${var.env}-sub-c-pub01"
-  }, var.tags)
-}
-*/
 
 # AZ a 프라이빗 서브넷1 생성
 resource "aws_subnet" "a_private_01" {
@@ -43,17 +31,6 @@ resource "aws_subnet" "a_private_01" {
   }, var.tags)
 }
 
-/*
-# AZ c 프라이빗 서브넷1 생성
-resource "aws_subnet" "c_private_01" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.c_private_subnet_01_cidr_block
-  availability_zone = "${var.region_id}c"
-  tags = merge({
-    Name = "${var.env}-sub-c-pri01"
-  }, var.tags)
-}
-*/
 
 # AZ a 프라이빗 서브넷2 생성
 resource "aws_subnet" "a_private_02" {
@@ -65,17 +42,6 @@ resource "aws_subnet" "a_private_02" {
   }, var.tags)
 }
 
-/*
-# AZ c 프라이빗 서브넷2 생성
-resource "aws_subnet" "c_private_02" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.c_private_subnet_02_cidr_block
-  availability_zone = "${var.region_id}c"
-  tags = merge({
-    Name = "${var.env}-sub-c-pri02"
-  }, var.tags)
-}
-*/
 
 # AZ a 프라이빗 서브넷3 생성
 resource "aws_subnet" "a_private_03" {
@@ -142,23 +108,6 @@ resource "aws_eip" "a_nat" {
   domain = "vpc" 
 }
 
-/*
-# AZ c 퍼블릭 서브넷에 NAT 생성
-resource "aws_nat_gateway" "c_nat" {
-  allocation_id = aws_eip.c_nat.id
-  subnet_id     = aws_subnet.c_public_01.id
-
-  tags = merge({
-    Name = "${var.env}-nat-c-pub01"
-  }, var.tags)
-}
-
-# NAT에서 사용할 Elastic IP 생성
-resource "aws_eip" "c_nat" {
-  domain = "vpc" 
-}
-
-*/
 
 #####################################
 # AZ a 프라이빗 서브넷 1의 라우팅 테이블
@@ -216,35 +165,28 @@ resource "aws_route_table_association" "a_private_03_association" {
   route_table_id = aws_route_table.a_private_03.id  # 프라이빗 라우팅 테이블 ID
 }
 
-/*
-#####################################
-# AZ c 프라이빗 서브넷 1의 라우팅 테이블
-#####################################
-#라우팅 테이블 생성
-resource "aws_route_table" "c_private_01" {
-  vpc_id = aws_vpc.main.id
 
-  tags = merge({
-    Name = "${var.env}-rtb-c-pri01"
-  }, var.tags)
+# SSM 관련 VPC Endpoint 생성
+resource "aws_vpc_endpoint" "ssm" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.ssm"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = var.subnet_id
+  security_group_ids = [var.bastion_security_group_id]
 }
 
-# NAT 게이트웨이를 경로로 추가
-resource "aws_route" "c_private_01_to_nat" {
-  route_table_id         = aws_route_table.c_private_01.id  # 프라이빗 라우팅 테이블
-  destination_cidr_block = "0.0.0.0/0"  # 모든 외부 트래픽에 대해
-  nat_gateway_id         = aws_nat_gateway.c_nat.id   # NAT 게이트웨이 ID 참조
-
-  depends_on = [aws_nat_gateway.c_nat]  # NAT 게이트웨이가 먼저 생성되도록 보장
+resource "aws_vpc_endpoint" "ec2messages" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.ec2messages"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = var.subnet_id
+  security_group_ids = [var.bastion_security_group_id]
 }
 
-# 서브넷과 라우팅 테이블 연결 (라우팅 테이블을 서브넷에 연결)
-resource "aws_route_table_association" "c_private_01_association" {
-  subnet_id      = aws_subnet.c_private_01.id  # 프라이빗 서브넷 ID
-  route_table_id = aws_route_table.c_private_01.id  # 프라이빗 라우팅 테이블 ID
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.region}.ssmmessages"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = var.subnet_id
+  security_group_ids = [var.bastion_security_group_id]
 }
-
-*/
-
-
-
