@@ -58,7 +58,6 @@ resource "aws_security_group" "bastion_sg" {
 
 resource "aws_key_pair" "bastion" {
   key_name   = var.key_name
-  public_key = tls_private_key.bastion.public_key_openssh
 
   tags = merge({
     Name = "${var.env}-key-${var.instance_name}"
@@ -68,5 +67,5 @@ resource "aws_key_pair" "bastion" {
 # AWS Key Pair 리소스를 생성할 시 공개 키 참조
 resource "aws_key_pair" "bastion_key_pair" {
   key_name   = "bastion-key"
-  public_key = file("./bastion-key.pub")
+  public_key = file("${path.module}/bastion-key.pub")
 }
