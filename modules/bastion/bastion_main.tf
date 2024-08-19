@@ -6,12 +6,7 @@ resource "aws_instance" "bastion_server" {
 
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
-  # 사용자 데이터 스크립트에서 환경변수로 저장된 ssh 키 참조
-  user_data = <<-EOF
-    #!/bin/bash
-    echo "${BASTION_PRIVATE_KEY}" > /home/ec2-user/.ssh/id_rsa
-    chmod 400 /home/ec2-user/.ssh/id_rsa
-  EOF
+  
 
   tags = merge({
     Name = "${var.env}-ec2-${var.instance_name}"

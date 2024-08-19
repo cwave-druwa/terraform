@@ -48,4 +48,11 @@ module "bastion" {
   tags = {
     Environment = "prod"
   }
+
+  # 사용자 데이터 스크립트에서 환경변수로 저장된 ssh 키 참조
+  user_data = <<-EOF
+    #!/bin/bash
+    echo "${BASTION_PRIVATE_KEY}" > /home/ec2-user/.ssh/id_rsa
+    chmod 400 /home/ec2-user/.ssh/id_rsa
+  EOF
 }
