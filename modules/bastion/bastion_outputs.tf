@@ -4,6 +4,6 @@ output "bastion_server_instance_id" {
 }
 
 output "bastion_security_group_id" {
-  description =
+  description = "The ID of the bastion server security group"
   value       = aws_security_group.bastion_sg.id
 }
