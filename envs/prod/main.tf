@@ -51,6 +51,13 @@ resource "aws_security_group" "lb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -66,7 +73,7 @@ module "ecs" {
   #cluster_name            = "nginx-cluster"
   env                       = "prod"
   region                    = "dk"
-  subnets                 = [module.network.a_public_subnet_01_id,module.network.c_public_subnet_01_id]
+  subnets                 = [module.network.a_private_subnet_01_id,module.network.c_private_subnet_01_id]
   security_groups         = [aws_security_group.lb_sg.id]
   task_execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   alb_target_group_arn    = aws_lb_target_group.nginx_tg.arn
@@ -103,7 +110,7 @@ resource "aws_ecs_service" "nginx_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [module.network.a_public_subnet_01_id,module.network.c_public_subnet_01_id]
+    subnets          = [module.network.a_private_subnet_01_id,module.network.c_private_subnet_01_id]
     security_groups  = [aws_security_group.lb_sg.id]
     assign_public_ip = false
   }
