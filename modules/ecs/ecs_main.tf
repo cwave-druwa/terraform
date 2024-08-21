@@ -28,6 +28,8 @@ resource "aws_ecs_task_definition" "nginx" {
   execution_role_arn       = var.task_execution_role_arn
 }
 
+/*
+#main.tf로 옮겨봄
 # ECS 서비스 생성
 resource "aws_ecs_service" "nginx_service" {
   name            = "nginx-service"
@@ -50,3 +52,4 @@ resource "aws_ecs_service" "nginx_service" {
 
  #depends_on = [aws_lb_listener.http]
 }
+*/

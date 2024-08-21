@@ -69,6 +69,7 @@ module "ecs" {
   desired_count           = 1
   task_execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   alb_target_group_arn    = aws_lb_target_group.nginx_tg.arn
+
 }
 
 # IAM 역할 생성 (ECS 태스크 실행 역할)
@@ -92,7 +93,28 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# ECS 서비스 생성 (ALB 리스너 생성 후)
+resource "aws_ecs_service" "nginx_service" {
+  name            = "nginx-service"
+  cluster         = module.ecs.ecs_cluster_id
+  task_definition = module.ecs.ecs_task_definition_arn
+  desired_count   = module.ecs.desired_count
+  launch_type     = "FARGATE"
 
+  network_configuration {
+    subnets          = module.network.private_subnet_ids
+    security_groups  = [aws_security_group.lb_sg.id]
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.nginx_tg.arn
+    container_name   = "nginx"
+    container_port   = 80
+  }
+
+  depends_on = [aws_lb_listener.http]
+}
 
 /*
 module "nginx" {
