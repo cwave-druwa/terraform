@@ -9,7 +9,7 @@ resource "aws_ecs_task_definition" "nginx" {
   container_definitions    = jsonencode([
     {
       name  = "nginx"
-      image = "nginx:latest"
+      image = "381492005553.dkr.ecr.ap-northeast-1.amazonaws.com/my-nginx-repo:latest"
       cpu   = 256
       memory = 512
       essential = true
