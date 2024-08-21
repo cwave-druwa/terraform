@@ -10,6 +10,7 @@ OBJECT_KEY = "previous_image_digest.txt"
 
 def lambda_handler(event, context):
     try:
+        print(f"시도중 ...")
         repository_name = "my-nginx-repo"
         tag = "newest"
         
@@ -21,8 +22,12 @@ def lambda_handler(event, context):
         try:
             previous_digest_object = s3.get_object(Bucket=BUCKET_NAME, Key=OBJECT_KEY)
             previous_digest = previous_digest_object['Body'].read().decode('utf-8').strip()
+            print(f"Previous digest from S3: {previous_digest}")  # 이전 다이제스트 값 출력
         except s3.exceptions.NoSuchKey:
             previous_digest = ""
+            print(f"Previous digest from S3: {previous_digest}")  # 이전 다이제스트 값 출력
+
+        print(f"Latest digest from ECR: {latest_digest}")  # 최신 다이제스트 값 출력
 
         # 이미지가 변경되었는지 확인
         if latest_digest != previous_digest:
