@@ -124,6 +124,16 @@ resource "aws_ecs_service" "nginx_service" {
   depends_on = [aws_lb_listener.http]
 }
 
+# 이미지 최신화 람다
+module "lambda" {
+  source = "./module/lambda"
+  
+  function_name = "check-ecr-lambda"
+  runtime       = "python3.8"
+}
+
+
+
 /*
 module "nginx" {
   source = "../../modules/nginx"
