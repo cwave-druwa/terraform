@@ -71,7 +71,7 @@ resource "aws_iam_policy_attachment" "attach_ecr_policy" {
 resource "aws_iam_policy_attachment" "attach_ecs_policy" {
   name       = "attach_ecs_policy"
   roles      = [aws_iam_role.lambda_exec.name]
-  policy_arn = "arn:aws:iam::aws:policy/AmazonECSFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
 }
 
 resource "aws_iam_policy_attachment" "attach_s3_policy" {
