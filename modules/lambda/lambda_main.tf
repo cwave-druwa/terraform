@@ -19,7 +19,7 @@ resource "aws_lambda_function" "check_ecr_lambda" {
 # CloudWatch Events 규칙 정의 (스케줄링)
 resource "aws_cloudwatch_event_rule" "trigger_lambda" {
   name                = "daily_ecr_check"
-  schedule_expression = "rate(10 minutes)"  #테스트 용 10분 마다
+  schedule_expression = "rate(2 minutes)"  #테스트 용 2분 마다
   #schedule_expression = "cron( 0 0 * ? *)"  # 매일 자정 UTC
 }
 
