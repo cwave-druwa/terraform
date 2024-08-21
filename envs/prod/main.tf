@@ -66,7 +66,6 @@ module "ecs" {
   region                    = "dk"
   subnets                 = [module.network.a_public_subnet_01_id,module.network.c_public_subnet_01_id]
   security_groups         = [aws_security_group.lb_sg.id]
-  desired_count           = 1
   task_execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   alb_target_group_arn    = aws_lb_target_group.nginx_tg.arn
 
@@ -97,12 +96,12 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
 resource "aws_ecs_service" "nginx_service" {
   name            = "nginx-service"
   cluster         = module.ecs.ecs_cluster_id
-  task_definition = module.ecs.ecs_task_definition_arn
-  desired_count   = module.ecs.desired_count
+  task_definition = module.ecs.ecs_nginx_create_task_arn
+  desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = module.network.private_subnet_ids
+    subnets          = [module.network.a_public_subnet_01_id,module.network.c_public_subnet_01_id]
     security_groups  = [aws_security_group.lb_sg.id]
     assign_public_ip = false
   }
