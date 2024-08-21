@@ -19,11 +19,11 @@ variable "security_groups" {
   type        = list(string)
 }
 
-variable "desired_count" {
-  description = "Desired number of ECS tasks"
-  type        = number
-  default     = 1
-}
+#variable "desired_count" {
+#  description = "Desired number of ECS tasks"
+#  type        = number
+#  default     = 1
+#}
 
 variable "task_execution_role_arn" {
   description = "IAM Role ARN for ECS task execution"

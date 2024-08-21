@@ -3,7 +3,8 @@ output "ecs_cluster_id" {
   value       = aws_ecs_cluster.cluster.id
 }
 
-output "ecs_service_name" {
-  description = "ECS Service Name"
-  value       = aws_ecs_service.nginx_service.name
+output "ecs_nginx_create_task_arn" {
+  description = "Task that create nginx on ecs"
+  value       = aws_ecs_task_definition.nginx.arn
 }
+
