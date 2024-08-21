@@ -1,6 +1,6 @@
 # ECS 클러스터 생성
 resource "aws_ecs_cluster" "cluster" {
-  name = "${var.env}-vpc-${var.region}"
+  name = "${var.env}-ecs-cluster-${var.region}"
 }
 
 # ECS 태스크 정의 생성
@@ -19,6 +19,15 @@ resource "aws_ecs_task_definition" "nginx" {
           hostPort      = 80
         }
       ]
+      #로그 설정 추가
+      logConfiguration = {
+        logDriver = "awslogs"
+          options = {
+            awslogs-group         = aws_cloudwatch_log_group.ecs_nginx_log_group.name
+            awslogs-region        = "ap-northeast-1"
+            awslogs-stream-prefix = "nginx"
+          }
+      }  
     }
   ])
   requires_compatibilities = ["FARGATE"]
@@ -26,6 +35,12 @@ resource "aws_ecs_task_definition" "nginx" {
   memory                   = "512"
   cpu                      = "256"
   execution_role_arn       = var.task_execution_role_arn
+}
+
+# cloud watch 설정
+resource "aws_cloudwatch_log_group" "ecs_nginx_log_group" {
+  name              = "/ecs/ecs_nginx_create_task"
+  retention_in_days = 7  # 로그 보관 기간 (예: 7일)
 }
 
 /*
