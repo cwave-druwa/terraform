@@ -84,12 +84,13 @@ def lambda_handler(event, context):
             update_message = "이미지가 최신 상태입니다."
     
     except Exception as e:
-       error_message = f"오류 발생: {str(e)}"
+        error_message = f"오류 발생: {str(e)}"
         return {
             'statusCode': 500,
             'body': error_message
         }
 
+    # 결과 반환
     return {
         'statusCode': 200,
         'body': {
