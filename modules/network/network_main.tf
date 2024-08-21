@@ -3,7 +3,11 @@
 #####################################
 # VPC 생성
 resource "aws_vpc" "main" {
-  cidr_block = var.vpc_cidr_block
+  cidr_block = "192.168.1.0/24"
+
+  enable_dns_support = true
+  enable_dns_hostnames = true
+  
   tags = merge({
     Name = "${var.env}-vpc-${var.region}"
   }, var.tags)
@@ -12,7 +16,7 @@ resource "aws_vpc" "main" {
 # AZ a 퍼블릭 서브넷 생성
 resource "aws_subnet" "a_public_01" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.a_public_subnet_01_cidr_block
+  cidr_block              = "192.168.1.0/27"
   availability_zone       = "${var.region_id}a"
   map_public_ip_on_launch = true  #퍼블릭IP 주소 자동할당
   tags = merge({
@@ -24,7 +28,7 @@ resource "aws_subnet" "a_public_01" {
 # AZ a 프라이빗 서브넷1 생성
 resource "aws_subnet" "a_private_01" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.a_private_subnet_01_cidr_block
+  cidr_block        = "192.168.1.64/27"
   availability_zone = "${var.region_id}a"
   tags = merge({
     Name = "${var.env}-sub-a-pri01"
@@ -35,7 +39,7 @@ resource "aws_subnet" "a_private_01" {
 # AZ a 프라이빗 서브넷2 생성
 resource "aws_subnet" "a_private_02" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.a_private_subnet_02_cidr_block
+  cidr_block        = "192.168.1.128/27"
   availability_zone = "${var.region_id}a"
   tags = merge({
     Name = "${var.env}-sub-a-pri02"
@@ -44,12 +48,46 @@ resource "aws_subnet" "a_private_02" {
 
 
 # AZ a 프라이빗 서브넷3 생성
-resource "aws_subnet" "a_private_03" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.a_private_subnet_03_cidr_block
-  availability_zone = "${var.region_id}a"
+#bastion 삭제
+#resource "aws_subnet" "a_private_03" {
+#  vpc_id            = aws_vpc.main.id
+#  cidr_block        = "192.168.1.192/27"
+#  availability_zone = "${var.region_id}a"
+#  tags = merge({
+#    Name = "${var.env}-sub-a-pri03"
+#  }, var.tags)
+#}
+
+# AZ c 퍼블릭 서브넷 생성
+resource "aws_subnet" "c_public_01" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "192.168.1.32/27"
+  availability_zone       = "${var.region_id}c"
+  map_public_ip_on_launch = true  #퍼블릭IP 주소 자동할당
   tags = merge({
-    Name = "${var.env}-sub-a-pri03"
+    Name = "${var.env}-sub-c-pub01"
+  }, var.tags)
+}
+
+
+# AZ c 프라이빗 서브넷1 생성
+resource "aws_subnet" "c_private_01" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "192.168.1.96/27"
+  availability_zone = "${var.region_id}c"
+  tags = merge({
+    Name = "${var.env}-sub-c-pri01"
+  }, var.tags)
+}
+
+
+# AZ c 프라이빗 서브넷2 생성
+resource "aws_subnet" "c_private_02" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "192.168.1.160/27"
+  availability_zone = "${var.region_id}c"
+  tags = merge({
+    Name = "${var.env}-sub-c-pri02"
   }, var.tags)
 }
 
@@ -65,7 +103,7 @@ resource "aws_internet_gateway" "igw" {
 # 퍼블릭 서브넷들에 대한 라우팅 테이블
 #####################################
 # 퍼블릭 라우팅 테이블 생성
-resource "aws_route_table" "public_01" {
+resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id  # VPC ID를 지정
 
   tags = merge({
@@ -74,7 +112,7 @@ resource "aws_route_table" "public_01" {
 }
 
 resource "aws_route" "internet_access" {
-  route_table_id         = aws_route_table.public_01.id  # 라우팅 테이블 ID를 지정
+  route_table_id         = aws_route_table.public.id  # 라우팅 테이블 ID를 지정
   destination_cidr_block = "0.0.0.0/0"  # 인터넷 경로를 지정
   gateway_id             = aws_internet_gateway.igw.id  # IGW ID를 지정
 }
@@ -82,13 +120,13 @@ resource "aws_route" "internet_access" {
 # 퍼블릭 서브넷들에 라우팅 테이블 연결
 resource "aws_route_table_association" "a_public_01" {
   subnet_id      = aws_subnet.a_public_01.id
-  route_table_id = aws_route_table.public_01.id
+  route_table_id = aws_route_table.public.id
 }
 
-#resource "aws_route_table_association" "c_public_01" {
-#  subnet_id      = aws_subnet.c_public_01.id
-#  route_table_id = aws_route_table.public_01.id
-#}
+resource "aws_route_table_association" "c_public_01" {
+  subnet_id      = aws_subnet.c_public_01.id
+  route_table_id = aws_route_table.public.id
+}
 
 #####################################
 # NAT
@@ -108,9 +146,23 @@ resource "aws_eip" "a_nat" {
   domain = "vpc" 
 }
 
+# AZ c 퍼블릭 서브넷에 NAT 생성
+resource "aws_nat_gateway" "c_nat" {
+  allocation_id = aws_eip.c_nat.id
+  subnet_id     = aws_subnet.c_public_01.id
+
+  tags = merge({
+    Name = "${var.env}-nat-c-pub01"
+  }, var.tags)
+}
+
+# NAT에서 사용할 Elastic IP 생성
+resource "aws_eip" "c_nat" {
+  domain = "vpc" 
+}
 
 #####################################
-# AZ a 프라이빗 서브넷 1의 라우팅 테이블
+# 프라이빗 서브넷들에 대한 라우팅 테이블
 #####################################
 #라우팅 테이블 생성
 resource "aws_route_table" "a_private_01" {
@@ -118,6 +170,14 @@ resource "aws_route_table" "a_private_01" {
 
   tags = merge({
     Name = "${var.env}-rtb-a-pri01"
+  }, var.tags)
+}
+
+resource "aws_route_table" "c_private_01" {
+  vpc_id = aws_vpc.main.id
+
+  tags = merge({
+    Name = "${var.env}-rtb-c-pri01"
   }, var.tags)
 }
 
@@ -130,12 +190,26 @@ resource "aws_route" "a_private_01_to_nat" {
   depends_on = [aws_nat_gateway.a_nat]  # NAT 게이트웨이가 먼저 생성되도록 보장
 }
 
+resource "aws_route" "c_private_01_to_nat" {
+  route_table_id         = aws_route_table.c_private_01.id  # 프라이빗 라우팅 테이블
+  destination_cidr_block = "0.0.0.0/0"  # 모든 외부 트래픽에 대해
+  nat_gateway_id         = aws_nat_gateway.c_nat.id   # NAT 게이트웨이 ID 참조
+
+  depends_on = [aws_nat_gateway.c_nat]  # NAT 게이트웨이가 먼저 생성되도록 보장
+}
+
 # 서브넷과 라우팅 테이블 연결 (라우팅 테이블을 서브넷에 연결)
 resource "aws_route_table_association" "a_private_01_association" {
   subnet_id      = aws_subnet.a_private_01.id  # 프라이빗 서브넷 ID
   route_table_id = aws_route_table.a_private_01.id  # 프라이빗 라우팅 테이블 ID
 }
 
+resource "aws_route_table_association" "c_private_01_association" {
+  subnet_id      = aws_subnet.c_private_01.id  # 프라이빗 서브넷 ID
+  route_table_id = aws_route_table.c_private_01.id  # 프라이빗 라우팅 테이블 ID
+}
+
+/*
 #####################################
 # AZ a 프라이빗 서브넷 3의 라우팅 테이블
 #####################################
@@ -164,6 +238,5 @@ resource "aws_route_table_association" "a_private_03_association" {
   subnet_id      = aws_subnet.a_private_03.id  # 프라이빗 서브넷 ID
   route_table_id = aws_route_table.a_private_03.id  # 프라이빗 라우팅 테이블 ID
 }
-
-
+*/
 

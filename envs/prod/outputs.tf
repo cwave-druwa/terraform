@@ -18,12 +18,18 @@ output "a_private_subnet_02_id" {
   value       = module.network.a_private_subnet_02_id
 }
 
-output "nginx_server_instance_id" {
-  description = "The ID of the Nginx instance"
-  value       = module.nginx.nginx_server_instance_id
-}
+#output "nginx_server_instance_id" {
+#  description = "The ID of the Nginx instance"
+#  value       = module.nginx.nginx_server_instance_id
+#}
 
-output "bastion_server_instance_id" {
-  description = "The ID of the bastion instance"
-  value       = module.bastion.bastion_server_instance_id
+#output "bastion_server_instance_id" {
+#  description = "The ID of the bastion instance"
+#  value       = module.bastion.bastion_server_instance_id
+#}
+
+# 출력 (ALB의 DNS 이름)
+output "alb_dns_name" {
+  description = "The DNS name of the load balancer"
+  value       = aws_lb.nginx_alb.dns_name
 }
