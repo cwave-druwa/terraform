@@ -3,10 +3,10 @@
 #######################################
 # Lambda 함수 정의
 resource "aws_lambda_function" "check_ecr_lambda" {
-  filename         = "lamcheck-ecr-lambda.zip"
-  function_name    = check-ecr-lambda
+  filename         = "check_ecr_lambda.zip"
+  function_name    = check_ecr_lambda
   role             = aws_iam_role.lambda_exec.arn
-  handler          = "check-ecr-lambda.lambda_handler"
+  handler          = "check_ecr_lambda.lambda_handler"
   runtime          = python3.8
   timeout          = 30
   environment {
