@@ -16,7 +16,7 @@ resource "aws_lambda_function" "check_ecr_lambda" {
     }
   }
 
-  source_code_hash = filebase64sha256("lambda.zip")
+  source_code_hash = filebase64sha256("check_ecr_lambda.zip")
 }
 
 # CloudWatch Events 규칙 정의 (스케줄링)
