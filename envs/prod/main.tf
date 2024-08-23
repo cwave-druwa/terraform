@@ -127,9 +127,6 @@ resource "aws_ecs_service" "nginx_service" {
 # 이미지 최신화 람다
 module "lambda" {
   source = "../../modules/lambda"
-  
-  function_name = "check-ecr-lambda"
-  runtime       = "python3.8"
 }
 
 
