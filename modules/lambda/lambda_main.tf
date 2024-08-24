@@ -117,28 +117,7 @@ resource "aws_cloudwatch_log_group" "check_ecr_lambda_log_group" {
 #########################################
 # server.olive0-druwa.com 상태 체크 람다 #
 #########################################
-/*
-# 보안 그룹 생성
-resource "aws_security_group" "lambda_sg" {
-  name        = "lambda_sg"
-  description = "Security group for Lambda functions"
-  vpc_id      = var.vpc_id  # 기존 VPC ID를 사용합니다.
 
-  ingress {
-  from_port   = 80
-  to_port     = 80
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-*/
 
 # Lambda 역할 생성
 resource "aws_iam_role" "lambda_role" {
