@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "nginx" {
       portMappings = [
         {
           containerPort = 80
-          hostPort      = 8080
+          #hostPort      = 8080
         }
       ]
       #로그 설정 추가
@@ -58,7 +58,7 @@ resource "aws_ecs_task_definition" "olive" {
       portMappings = [
         {
           containerPort = 80
-          hostPort      = 8080
+          #hostPort      = 8080
         }
       ]
       #로그 설정 추가
