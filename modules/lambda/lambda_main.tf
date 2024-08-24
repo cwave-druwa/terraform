@@ -91,14 +91,6 @@ resource "aws_iam_policy_attachment" "lambda_basic_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-
-# Lambda 역할에 기본 실행 권한 추가 (CloudWatch Logs 및 CloudWatch Metrics)
-resource "aws_iam_policy_attachment" "lambda_basic_execution_policy" {
-  name       = "lambda_basic_execution"
-  roles      = [aws_iam_role.lambda_exec.name]  # 중복 제거
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
 # Lambda 함수의 CloudWatch 로그 그룹 생성
 resource "aws_cloudwatch_log_group" "check_ecr_lambda_log_group" {
   name              = "/aws/lambda/check_ecr_lambda"
