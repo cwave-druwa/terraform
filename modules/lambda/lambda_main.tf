@@ -48,13 +48,14 @@ resource "aws_s3_bucket" "image_digest_bucket" {
   acl    = "private"
 }
 
-# IAM 역할 정의 (Lambda 실행을 위한)
+# IAM 역할 정의 (Lambda 실행과 cloudewatch 로그 기록을 위한)
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
-    Statement = [{
+    Statement = [
+      {
       Action = "sts:AssumeRole",
       Effect = "Allow",
       Principal = {
@@ -83,7 +84,36 @@ resource "aws_iam_policy_attachment" "attach_s3_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+# Lambda 역할에 기본 실행 권한 추가 (CloudWatch Logs 및 CloudWatch Metrics)
+resource "aws_iam_policy_attachment" "lambda_basic_execution_policy" {
+  name       = "lambda_basic_execution"
+  roles      = [aws_iam_role.lambda_exec.name]
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
 
+
+# Lambda 역할에 기본 실행 권한 추가 (CloudWatch Logs 및 CloudWatch Metrics)
+resource "aws_iam_policy_attachment" "lambda_basic_execution_policy" {
+  name       = "lambda_basic_execution"
+  roles      = [aws_iam_role.lambda_exec.name]  # 중복 제거
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+# Lambda 함수의 CloudWatch 로그 그룹 생성
+resource "aws_cloudwatch_log_group" "check_ecr_lambda_log_group" {
+  name              = "/aws/lambda/check_ecr_lambda"
+  retention_in_days = 14
+}
+
+# Lambda 역할에 정책 부여
+#resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
+#  role       = aws_iam_role.lambda_role.name
+#  policy_arn = aws_iam_policy.lambda_policy.arn
+#}
+
+
+
+/*
 #########################################
 # server.olive0-druwa.com 상태 체크 람다 #
 #########################################
@@ -277,3 +307,4 @@ resource "aws_cloudwatch_log_group" "update_dns_lambda_log_group" {
   name              = "/aws/lambda/update_dns_lambda"
   retention_in_days = 14
 }
+*/

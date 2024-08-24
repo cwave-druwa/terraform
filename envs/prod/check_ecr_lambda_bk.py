@@ -11,8 +11,8 @@ OBJECT_KEY = "previous_image_digest.txt"
 def lambda_handler(event, context):
     try:
         print(f"시도중 ...")
-        repository_name = "olive-young-server-dr"
-        tag = "latest-dr"
+        repository_name = "my-nginx-repo"
+        tag = "newest"
         
         # ECR에서 최신 이미지 조회
         response = ecr_client.describe_images(repositoryName=repository_name, imageIds=[{'imageTag': tag}])
@@ -40,17 +40,17 @@ def lambda_handler(event, context):
             # ECS 서비스 업데이트를 트리거하여 새로운 태스크 정의 사용
             update_response = ecs_client.update_service(
                 cluster='prod-ecs-cluster-dk',
-                service='olive-service',
+                service='nginx-service',
                 forceNewDeployment=True
             )
             update_message = f"ECS 서비스 업데이트 완료: {update_response}"
 
             # 새로운 태스크 정의를 등록
             #task_def_response = ecs_client.register_task_definition(
-            #    family='olive-task',
+            #    family='nginx-task',
             #    containerDefinitions=[
             #        {
-            #            'name': 'olive',
+            #            'name': 'nginx',
             #            'image': f'{repository_name}:{tag}',
             #            'cpu': 256,
             #            'memory': 512,
@@ -75,7 +75,7 @@ def lambda_handler(event, context):
             # ECS 서비스 업데이트를 트리거하여 새로운 태스크 정의 사용
             #update_response = ecs_client.update_service(
             #    cluster='prod-ecs-cluster-dk',
-            #    service='olive-service',
+            #    service='nginx-service',
             #    taskDefinition=new_task_definition,
             #    forceNewDeployment=True
             #)

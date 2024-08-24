@@ -12,16 +12,16 @@ module "network" {
 }
 
 # ALB 생성
-resource "aws_lb" "nginx_alb" {
-  name               = "nginx-alb"
+resource "aws_lb" "olive_alb" {
+  name               = "olive-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
   subnets            = [module.network.a_public_subnet_01_id,module.network.c_public_subnet_01_id]
 }
 
-resource "aws_lb_target_group" "nginx_tg" {
-  name     = "nginx-tg"
+resource "aws_lb_target_group" "olive_tg" {
+  name     = "olive-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = module.network.vpc_id
@@ -30,13 +30,13 @@ resource "aws_lb_target_group" "nginx_tg" {
 }
 
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.nginx_alb.arn
+  load_balancer_arn = aws_lb.olive_alb.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.nginx_tg.arn
+    target_group_arn = aws_lb_target_group.olive_tg.arn
   }
 }
 
@@ -70,13 +70,13 @@ resource "aws_security_group" "lb_sg" {
 module "ecs" {
   source = "../../modules/ecs"
 
-  #cluster_name            = "nginx-cluster"
+  #cluster_name            = "olive-cluster"
   env                       = "prod"
   region                    = "dk"
   subnets                 = [module.network.a_private_subnet_01_id,module.network.c_private_subnet_01_id]
   security_groups         = [aws_security_group.lb_sg.id]
   task_execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
-  alb_target_group_arn    = aws_lb_target_group.nginx_tg.arn
+  alb_target_group_arn    = aws_lb_target_group.olive_tg.arn
 
 }
 
@@ -102,10 +102,10 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
 }
 
 # ECS 서비스 생성 (ALB 리스너 생성 후)
-resource "aws_ecs_service" "nginx_service" {
-  name            = "nginx-service"
+resource "aws_ecs_service" "olive_service" {
+  name            = "olive-service"
   cluster         = module.ecs.ecs_cluster_id
-  task_definition = module.ecs.ecs_nginx_create_task_arn
+  task_definition = module.ecs.ecs_olive_create_task_arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
@@ -116,8 +116,8 @@ resource "aws_ecs_service" "nginx_service" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.nginx_tg.arn
-    container_name   = "nginx"
+    target_group_arn = aws_lb_target_group.olive_tg.arn
+    container_name   = "olive"
     container_port   = 80
   }
 
@@ -132,15 +132,15 @@ module "lambda" {
 
 
 /*
-module "nginx" {
-  source = "../../modules/nginx"
+module "olive" {
+  source = "../../modules/olive"
   
   env           = "prod"
   vpc_id        = module.network.vpc_id  # network 모듈의 output 참조
   subnet_id     = module.network.a_private_subnet_02_id
   ami_id        = "ami-0091f05e4b8ee6709" #region마다 ami id 다름
   instance_type = "t2.micro"
-  instance_name = "nginx"
+  instance_name = "olive"
   
   tags = {
     Environment = "prod"

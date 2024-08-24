@@ -31,5 +31,5 @@ output "a_private_subnet_02_id" {
 # 출력 (ALB의 DNS 이름)
 output "alb_dns_name" {
   description = "The DNS name of the load balancer"
-  value       = aws_lb.nginx_alb.dns_name
+  value       = aws_lb.olive_alb.dns_name
 }
